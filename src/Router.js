@@ -1,14 +1,13 @@
-import {  Route, Routes } from 'react-router-dom';
-
-
-import { LoginPage } from './components/Login/Login';
+import { Route, Routes } from 'react-router-dom';
+import Login from './pages/Login';
+import Signin from './pages/Signin';
 
 function AppNavigation() {
     return (
         <>
             <Routes>
-                <Route path="/" element={<LoginPage />} /> 
-
+                <Route path="/" element={<Login />} /> 
+                <Route path="/signin" element={<Signin />} /> 
             </Routes>
         </>
     );
