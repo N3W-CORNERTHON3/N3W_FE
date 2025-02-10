@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components"; 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function SigninPage() {
 
@@ -14,14 +16,16 @@ export function SigninPage() {
 	const [idError, setIdError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     
-    const passwordRegEx = /^[A-Za-z0-9]{8,20}$/
+    const passwordRegEx = /^[A-Za-z0-9!@#$%^&*()]{8,20}$/;
 
     const passwordCheck = (password) => {
         if(password.match(passwordRegEx)===null) { 
-            console.log('비밀번호 형식을 확인 필요'); 
-            return;
+            setPasswordError("비밀번호는 영어, 숫자, 특수문자 포함 8자 이상이어야야 합니다.");
+            return false;
         }else{ 
-            console.log('비밀번호 형식 일치치');
+            console.log('비밀번호 형식 일치');
+            setPasswordError("");
+            return true;
         }
         }
 
@@ -32,28 +36,34 @@ export function SigninPage() {
 			[e.target.name]: e.target.value,
 		});
 
-        if (e.target.type == "password"){
+        if (e.target.type === "password"){
             passwordCheck(e.target.value);
         }
     };
 
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        // e.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault(); // 기본 동작 방지지
 
         // if (!formData.id) {
         //     setIdError("아이디를 입력해주세요.");
         //     return;
         // }
-        // if (!formData.password) {
-        //     setPasswordError("비밀번호를 입력해주세요.");
-        //     return;
-        // }
-        // if (passwordError) {
-        //     alert("비밀번호 형식을 확인해주세요.");
-        //     return;
-        // }
+        if (!formData.password) {
+            setPasswordError("비밀번호를 입력해주세요.");
+            return;
+        }
+
+        const isPasswordValid = passwordCheck(formData.password);
+
+        if (!isPasswordValid) {
+            toast.error('비밀번호 형식을 확인해 주세요', {
+				autoClose: 3000,
+				position: "top-center",
+			});
+            return;
+        }
 
 		console.log("회원가입 완료 버튼");
         navigate('/'); // 로그인 페이지 이동
@@ -63,7 +73,6 @@ export function SigninPage() {
         <SigninRootWrapper>
             <ContentContainer>
                 <IdText>아이디(닉네임)</IdText>
-                <IdText2>*가입 후 변경이 불가능합니다.</IdText2>
                 <IdContainer>
                     <IdInputBox
                         type="text"
@@ -86,8 +95,10 @@ export function SigninPage() {
                     onChange={handleChange}
                     placeholder={"비밀번호"}
                 />
-                <ErrorText>비밀번호는 영어, 숫자, 특수문자 포함 8글자 이상이어야 합니다.</ErrorText>
+                {passwordError && <ErrorText>{passwordError}</ErrorText>}
 
+
+                <InfoText>*가입 후 변경이 불가능합니다.</InfoText>
                 <SigninButton 
                     type="submit"
                     onClick={handleSubmit}
@@ -127,17 +138,6 @@ const IdText = styled.p`
     margin: 0; //기본 margin 제거
     margin-left: 30px;
 `;
-
-const IdText2 = styled.p`
-    font-size: 11px;
-    font-weight: 500;
-    color: red;
-    line-height: 1.5;
-    margin: 0;
-    margin-top: 5px;
-    margin-left: 30px;
-`;
-
 
 const IdContainer = styled.div`
     display: flex;
@@ -183,7 +183,6 @@ const IdCheckButton = styled.button`
     }
 `;
 
-
 const PasswordText = styled.p`
     font-size: 20px;
     font-weight: bold;
@@ -209,6 +208,16 @@ const PasswordInputBox = styled.input`
     }
 `;
 
+const InfoText = styled.p`
+    font-size: 12px;
+    font-weight: bold;
+    color: red;
+    line-height: 1.5;
+    margin: 0;
+    margin-top: 120px;
+    margin-left: 105px;
+`;
+
 const SigninButton = styled.button`
     width: 95%;
     height: 45px;
@@ -219,7 +228,7 @@ const SigninButton = styled.button`
     font-weight: bold;
     border-radius: 20px;
     cursor: pointer;
-    margin-top: 120px;
+    margin-top: 10px;
     margin-left: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
 
@@ -231,7 +240,7 @@ const SigninButton = styled.button`
 
 const ErrorText = styled.p`
     font-size: 11px;
-    font-weight: 500;
+    font-weight: bold;
     color: #5AB2FF;
     line-height: 1.5;
     margin-top: 3px;
