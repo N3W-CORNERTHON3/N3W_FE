@@ -1,6 +1,7 @@
 import styled from "styled-components"; 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { ExeptionModal } from "./ExceptionModal";
 
 export function ChallengeSelectPage(){
     
@@ -26,7 +27,29 @@ export function ChallengeSelectPage(){
         setcompleteChecked(event.target.checked);
     }
 
+    // 예외처리 모달
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     const navigate = useNavigate();
+
+    // 목데이터
+    const [missions, setMissions] = useState([]); 
+
+    const handleMissionDraw = () => {
+        if (missions.length === 0) {
+            openModal(); // 미션이 없으면 예외 모달 오픈
+        } else {
+            navigate(`/challengeResult`);
+        }
+    };
 
     return(
         <ChallengeRootWrapper>
@@ -93,10 +116,17 @@ export function ChallengeSelectPage(){
                         </StyledLabel>
                     </CheckboxWrapper>
                 
-                    <MissionDrawBtn onClick={() => navigate(`/challengeResult`)}>
+                    <MissionDrawBtn onClick={handleMissionDraw}>
                         미션 뽑기
                     </MissionDrawBtn>
                 </DrawContainer>
+
+                {isModalOpen && (
+                    <ExeptionModal
+                        isModalOpen={isModalOpen}
+                        closeModal={closeModal}
+                    />
+                )}
                 
             </ContentContainer>
             
