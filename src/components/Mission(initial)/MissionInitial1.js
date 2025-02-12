@@ -1,7 +1,12 @@
 import { MdOutlineFlag } from "react-icons/md";
 import styled from "styled-components"; 
+import { useNavigate } from "react-router-dom";
 
 export function MissionInitial1page(){
+
+
+    const navigate = useNavigate();
+
     return(
         <MissionRootWrapper>
             <ContentContainer>
@@ -16,7 +21,7 @@ export function MissionInitial1page(){
 
                 <MissionIcon />
 
-                <MissionAddBtn>
+                <MissionAddBtn onClick={() => navigate(`/missioninitialAdd`)}>
                     미션 추가하기 
                 </MissionAddBtn>
             </ContentContainer>
