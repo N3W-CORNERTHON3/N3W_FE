@@ -6,6 +6,7 @@ import FirstMission from './pages/FirstMission';
 import FirstMissionAdd from './pages/FirstMissionAdd';
 import Challenge1 from './pages/Challenge1';
 import Challenge2 from './pages/Challenge2';
+import Challenge3 from './pages/Challenge3';
 
 
 function AppNavigation() {
@@ -20,6 +21,7 @@ function AppNavigation() {
 
                 <Route path="/challenge" element={<Challenge1 />} />
                 <Route path="/challengeSelect" element={<Challenge2 />} />
+                <Route path="/challengeResult" element={<Challenge3 />} />
 
             </Routes>
         </>

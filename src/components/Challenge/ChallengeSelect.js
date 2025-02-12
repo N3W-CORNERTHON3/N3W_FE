@@ -29,7 +29,7 @@ export function ChallengeSelectPage(){
     const navigate = useNavigate();
 
     return(
-        <MissionRootWrapper>
+        <ChallengeRootWrapper>
             <ContentContainer>
 
                 <CategoryContainer>
@@ -93,19 +93,19 @@ export function ChallengeSelectPage(){
                         </StyledLabel>
                     </CheckboxWrapper>
                 
-                    <MissionDrawBtn onClick={() => navigate(`/missioninitialAdd`)}>
+                    <MissionDrawBtn onClick={() => navigate(`/challengeResult`)}>
                         미션 뽑기
                     </MissionDrawBtn>
                 </DrawContainer>
                 
             </ContentContainer>
             
-        </MissionRootWrapper>
+        </ChallengeRootWrapper>
     )
 }
 
 
-const MissionRootWrapper = styled.div`
+const ChallengeRootWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
