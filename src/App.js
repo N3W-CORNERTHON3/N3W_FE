@@ -1,9 +1,13 @@
-import './App.css';
+import React, { useState } from 'react';
+import AllList from './pages/AllList.jsx';
+import Complete from './pages/Complete.jsx';
 
-function App() {
+const App = () => {
   return (
-    <div className="App"></div>
+    <>
+      <Complete/>
+    </>
   );
-}
+};
 
 export default App;
