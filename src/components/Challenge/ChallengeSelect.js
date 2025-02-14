@@ -3,23 +3,23 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ExeptionModal } from "./ExceptionModal";
 
-export function ChallengeSelectPage(){
-    
-    // 객체로 관리
-    const categories = {
-        1: "건강",
-        2: "취미",
-        3: "학습",
-        4: "자기계발",
-        5: "기타",
-    };
+// 객체로 관리
+export const categories = {
+    1: "건강",
+    2: "취미",
+    3: "학습",
+    4: "자기계발",
+    5: "기타",
+};
 
-    const levels = {
-        1: "상",
-        2: "중",
-        3: "하",
-        4: "랜덤",
-    };
+export const levels = {
+    1: "상",
+    2: "중",
+    3: "하",
+    4: "랜덤",
+};
+
+export function ChallengeSelectPage(){
 
     // 체크박스 상태관리
     const [completeChecked, setcompleteChecked] = useState(false);
