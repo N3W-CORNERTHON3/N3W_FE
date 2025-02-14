@@ -1,7 +1,10 @@
+import React, { useState } from 'react';
+import AllList from './pages/AllList.jsx';
+import Complete from './pages/Complete.jsx';
 import './App.css';
 import Router from './Router';
 
-function App() {
+const App = () => {
   return (
     <>
         <div className="App">
@@ -12,6 +15,6 @@ function App() {
     </>
     
   );
-}
+};
 
 export default App;
