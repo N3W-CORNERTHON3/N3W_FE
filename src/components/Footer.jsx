@@ -11,6 +11,7 @@ const FooterDiv = styled.div`
   padding-left: 28px;
   position: absolute;
   top: 750px;
+  text-align: left;
   `;
 
 const AppTitle = styled.h3 `

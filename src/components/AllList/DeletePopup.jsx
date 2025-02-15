@@ -10,8 +10,7 @@ const Popup = styled.div `
     border-radius: 15px;
     /*position: relative;*/
     position: absolute; 
-    top: 180px;
-    left: 28px;
+    top: 200px;
     background-color: #fff;
     z-index: 1000; /* 팝업이 앞에 보이도록 z-index 설정 */
     display: flex;

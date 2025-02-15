@@ -5,14 +5,18 @@ import PlusBtn from '../images/PlusBtn.png';
 import Mission from '../components/AllList/Mission.jsx';
 import styled from 'styled-components';
 import AddPopup from '../components/AllList/AddPopup.jsx';
-import FuncPopup from '../components/Challenge/CardDetail.jsx';
+import FuncPopup from '../components/AllList/FuncPopup.jsx';
 import DeletePopup from '../components/AllList/DeletePopup.jsx';
-import CardDetail from '../components/Challenge/CardDetail.jsx';
+import EditPopup from '../components/AllList/EditPopup.jsx'; // EditPopup import 추가
 
 const Display = styled.div `
     width: 393px;
     height: 852px;
     border: 1px solid #000;
+    display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: left;
 `;
 
 const Content = styled.div `
@@ -68,16 +72,43 @@ const MissionWrap = styled.div`
 `;
 
 const AllList = () => {
-
   const [showPopup, setShowPopup] = useState(false); // 팝업 상태 관리
+  const [showFuncPopup, setShowFuncPopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [selectedMission, setSelectedMission] = useState(null); // 선택된 미션 관리
 
   const handleAddMission = () => {
     setShowPopup(true); // 플러스 버튼 클릭 시 팝업 열기
   };
 
+  const handleMissionClick = (mission) => {
+    setSelectedMission(mission); // 클릭한 미션 데이터 설정
+    setShowFuncPopup(true); // Func 팝업 열기
+    setShowEditPopup(false); // 다른 팝업 닫기
+    setShowDeletePopup(false); // 다른 팝업 닫기
+  };
+
+  const handleEditClick = () => {
+    setShowFuncPopup(false); // Func 팝업 닫기
+    setShowEditPopup(true); // Edit 팝업 열기
+  };
+
+  const handleDeleteClick = () => {
+    setShowFuncPopup(false); // Func 팝업 닫기
+    setShowDeletePopup(true); // Delete 팝업 열기
+  };
+
   const handleClosePopup = () => {
     setShowPopup(false); // 팝업 닫기
   };
+
+  const missions = [
+    { type: 'ing', category: '공부', text: '수학 문제 풀기' },
+    { type: 'yet', category: '공부', text: '영어 단어 외우기' },
+    // 더 많은 미션 데이터를 추가하세요
+  ];
+
 
   return (
     <>
@@ -99,27 +130,39 @@ const AllList = () => {
           </FuncDiv>
           
             <MissionWrap>
-                <Mission type={'ing'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'yet'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
-                <Mission type={'done'} category={'공부'} text={'수학 문제 풀기'}/>
+            {missions.map((mission, index) => (
+              <Mission
+                key={index}
+                type={mission.type}
+                category={mission.category}
+                text={mission.text}
+                onClick={() => handleMissionClick(mission)}
+              />
+            ))}
+
                 </MissionWrap>
         </Content>
         {showPopup && <AddPopup onClose={handleClosePopup} />} {/* 팝업 표시 */}
-        <CardDetail category={'공부'} rate={33}/>
+        {showFuncPopup && (
+          <FuncPopup
+            mission={selectedMission} // 선택된 미션 데이터 전달
+            onEditClick={handleEditClick}
+            onDeleteClick={handleDeleteClick}
+            onClose={() => setShowFuncPopup(false)}
+          />
+        )}
+        {showEditPopup && (
+          <EditPopup
+            mission={selectedMission}
+            onClose={() => setShowEditPopup(false)}
+          />
+        )}
+        {showDeletePopup && (
+          <DeletePopup
+            mission={selectedMission}
+            onClose={() => setShowDeletePopup(false)}
+          />
+        )}
       <Footer/>
       </Display >
     </>

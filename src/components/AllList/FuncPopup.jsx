@@ -10,8 +10,7 @@ const Popup = styled.div `
     border-radius: 15px;
     /*position: relative;*/
     position: absolute; 
-    top: 180px;
-    left: 28px;
+    top: 200px;
     background-color: #fff;
     z-index: 1000; /* 팝업이 앞에 보이도록 z-index 설정 */
     display: flex;
@@ -46,14 +45,14 @@ const Delete = styled(Edit) `
 margin-left: 22px;
 `;
 
-const FuncPopup = ({ onClose }) => {
+const FuncPopup = ({ onClose, onEditClick, onDeleteClick }) => {
  
   return (
     <>
     <Popup>
         <Content>
-            <Edit type='button' >수정하기</Edit>
-            <Delete type='button' >삭제하기</Delete>
+            <Edit type='button' onClick={onEditClick}>수정하기</Edit>
+            <Delete type='button' onClick={onDeleteClick}>삭제하기</Delete>
             <CancelBtn src={cancel} onClick={onClose}/>
         </Content>
     </Popup>

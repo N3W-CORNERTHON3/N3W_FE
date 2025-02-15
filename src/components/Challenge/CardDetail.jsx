@@ -11,7 +11,6 @@ const Popup = styled.div `
     /*position: relative;*/
     position: absolute; 
     top: 200px;
-    left: 75px;
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
     background-color: ${({ color }) => color};
     z-index: 1000; /* 팝업이 앞에 보이도록 z-index 설정 */
@@ -119,7 +118,7 @@ const MemoText = styled.p `
 `;
 
 
-const CardDetail = ({ onClose, category, rate }) => {
+const CardDetail = ({ onClose, card, category, rate }) => {
     const categoryData = {
         자기계발: '#FFF1F1',
         공부: '#FFE4CC',

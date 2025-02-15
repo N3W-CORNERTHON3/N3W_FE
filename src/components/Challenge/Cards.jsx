@@ -74,10 +74,10 @@ const darkenColor = (color, percentage) => {
       .slice(1)}`;
   };
 
-const Cards = ({category, number}) => {
+const Cards = ({ onClick, category, number }) => {
   return (
     <>
-         <Card category={category}>
+         <Card category={category} onClick={onClick}>
             <CardContent>
                 <Mission>mission</Mission>
                 <MissionNum>{number}</MissionNum>
@@ -88,6 +88,7 @@ const Cards = ({category, number}) => {
                     <Star src={noStar}></Star>
                 </StarWrap>
         </Card>
+        
     </>
   );
 };

@@ -37,7 +37,7 @@ const MissionCategory = styled.p`
 const MissionDifficulty = styled.p`
   width: 17px;
   height: 12px;
-  background-color: #FFF9D0;
+  background-color: #5AB2FF;
   font-size: 10px;
   color: #fff;
   margin: 0;
@@ -51,9 +51,11 @@ const MissionText = styled.p`
   flex-grow: 1;
   font-size: 14px;
   margin: 0;
+  margin-left: 10px;
+  margin-top: 8px;
 `;
 
-const Mission = ({ type, category, text }) => {
+const Mission = ({ type, category, text, onClick  }) => {
   const categoryData = {
     자기계발: '#FFF1F1',
     공부: '#FFE4CC',
@@ -63,7 +65,7 @@ const Mission = ({ type, category, text }) => {
   };
 
   return (
-    <MissionDiv type={type}>
+    <MissionDiv type={type} onClick={onClick}>
         <MissionDetail>
         <MissionCategory color={categoryData[category]}>{category}</MissionCategory>
         <MissionDifficulty>상</MissionDifficulty>
