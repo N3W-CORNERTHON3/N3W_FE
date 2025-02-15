@@ -1,9 +1,10 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Complete from '../images/Complete.png';
 import AllList from '../images/AllList.png';
 import Challenge from '../images/Challenge.png';
-
+import axios from 'axios';
+import profile from '../images/ProfileImg.png';
 
 // styled-components를 사용한 스타일링
 
@@ -36,7 +37,7 @@ const SideBarWrap = styled.div`
 const MenuWrap = styled.ul `
       list-style: none;
       padding: 0;
-      margin-top: 100px;
+      margin-top: 40px;
 `;
 
 const MenuImg = styled.img `
@@ -61,13 +62,24 @@ const MenuText = styled.p `
   margin-left: 24px;
 `;
 
-const ExitMenu = styled.span`
-  position: absolute;
-  bottom: 26px;
-  font-size: 0.8rem;
+const Profile = styled.div `
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 85px;
+  `;
+
+const ProfileImg = styled.img `
+`;
+
+const Name = styled.p `
+  font-size: 15px;
+  margin: 0;
+  margin-top: 12px;
 `;
 
 function Sidebar({ isOpen, setIsOpen }) {
+  const [profileData, setProfileData] = useState({ id: '', profileImg: '' });
   const outside = useRef(null);
 
   // 사이드바 외부 클릭 시 닫히는 로직
@@ -89,8 +101,33 @@ function Sidebar({ isOpen, setIsOpen }) {
     setIsOpen(false);
   };
 
+  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNzM5NjQyMzIyLCJleHAiOjE3Mzk2NDU5MjJ9.mEnWXbIbTgGobZB6ySJFNJapstTFN1n3K1nErLKlKu4';
+
+  // API 요청으로 프로필 정보 가져오기
+  useEffect(() => {
+    axios.get('http://localhost:8080/api/member/profiles', {
+      headers: {
+        'Authorization': `Bearer ${token}` // 혹은 세션 스토리지에서 토큰을 가져올 수 있습니다.
+      }
+    })
+      .then((response) => {
+        const data = response.data[0];  // 배열의 첫 번째 데이터 사용
+        setProfileData({
+          id: data.id,
+          profileImg: data.profileImg ? `http://localhost:8080/${data.profileImg}` : profile,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   return (
     <SideBarWrap ref={outside} className={isOpen ? 'open' : ''}>
+      <Profile>
+      <ProfileImg src={profileData.profileImg} alt="Profile" />
+      <Name>{profileData.id}</Name>
+      </Profile>
       <MenuWrap>
         <Menu><MenuImg src={Complete}/><MenuText>성취 미션</MenuText></Menu>
         <Menu><MenuImg src={Challenge}/><MenuText>챌린지</MenuText></Menu>
