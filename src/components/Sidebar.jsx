@@ -14,13 +14,14 @@ const SideBarWrap = styled.div`
   z-index: 5;
   padding: 12px;
   border-radius: 15px 0 0 15px;
-  background-color:rgba(255, 255, 255, 0.8);
+  background-color:rgba(255, 255, 255, 0.9);
   height: 832px;
   width: 200px;
-  right: -220px;  /* 닫혔을 때는 화면 밖에 위치 */
   top: 0;
   position: absolute;
   transition: 0.5s ease;
+  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')}; /* 숨김 처리 */
+
   
 
   &.open {
@@ -28,7 +29,6 @@ const SideBarWrap = styled.div`
     transition: 0.5s ease;
   }
 `;
-
 
 const MenuWrap = styled.ul `
       list-style: none;
@@ -221,7 +221,7 @@ function Sidebar({ isOpen, setIsOpen }) {
   };
   
   return (
-    <SideBarWrap ref={outside} className={isOpen ? 'open' : ''}>
+    <SideBarWrap ref={outside} className={isOpen ? 'open' : ''} isOpen={isOpen}>
       <Profile>
       <ProfileImg
   src={profileData.profileImg == 'defualtImg' ? profile : profileData.profileImg}

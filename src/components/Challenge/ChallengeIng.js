@@ -169,7 +169,6 @@ export function ChallengeIngPage(){
         <ChallengeRootWrapper>
             <ScrollContent>
                 <ContentContainer>
-
                     <ChallengeHeaderWrapper>
                         <ChallengeDate>{mission.startDate} ~ {mission.endDate}</ChallengeDate>
                         <ChallengeHeaderContainer>
@@ -239,7 +238,6 @@ const ChallengeRootWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 393px;
     height: 852px;
     background-color: white;
@@ -249,9 +247,9 @@ const ChallengeRootWrapper = styled.div`
 
 const ScrollContent = styled.div`
     width: 95%;
-    height: 85%;
+    height: 86%;
     overflow-y: auto;
-    
+
     &::-webkit-scrollbar {
         width: 0px;
         height: 0px; 
@@ -264,6 +262,7 @@ const ContentContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: start;
+    margin-top: 60px;
 `;
 
 const ChallengeHeaderWrapper = styled.div`
@@ -273,6 +272,8 @@ const ChallengeHeaderWrapper = styled.div`
     justify-content: start;
     margin-bottom: 40px;
     width: 98%;
+    margin-top: 25px;
+    margin-left: 5px;
 `;
 
 const ChallengeDate = styled.span`
@@ -302,6 +303,7 @@ const Level = styled.div`
     width: 20px;
     height: 20px;
     padding: 1px;
+    text-align: center;
 `;
 
 const Category = styled.span`

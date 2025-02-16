@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header.jsx';
-import Footer from '../components/Footer.jsx';
 import PlusBtn from '../images/PlusBtn.png';
 import Mission from '../components/AllList/Mission.jsx';
 import styled from 'styled-components';

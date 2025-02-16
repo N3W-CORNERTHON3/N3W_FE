@@ -7,7 +7,9 @@ import Sidebar from './Sidebar.jsx';
 const HeaderDiv = styled.div`
   width: 393px;
   height: 66px;
-  border: 1.5px solid #B5B5B5;
+  border: none;
+  border-bottom: 1.5px solid #B5B5B5;;
+
   display: flex;
   align-items: center;
   position: relative;

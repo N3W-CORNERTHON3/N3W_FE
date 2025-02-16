@@ -211,7 +211,6 @@ const ChallengeRootWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 393px;
     height: 852px;
     background-color: white;
@@ -227,6 +226,7 @@ const ContentContainer = styled.div`
     align-self: center;
     justify-content: center;
     text-align: start;
+    margin-top: 110px;
 `;
 
 const HeaderText1 = styled.div`
@@ -251,7 +251,7 @@ const DrawContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 80px;
+    margin-top: 70px;
 `;
 
 const QuesText = styled.div`
@@ -285,7 +285,7 @@ const CategoryContainer = styled.div`
     flex-direction: column;
     justify-content: start;
     align-items: start;
-    margin-bottom: 85px;
+    margin-bottom: 75px;
 `;
 
 const CategoryRadioWrapper = styled.div`
