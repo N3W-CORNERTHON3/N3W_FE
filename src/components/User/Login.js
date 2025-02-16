@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components"; 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 export function LoginPage() {
 
@@ -19,6 +22,63 @@ export function LoginPage() {
     };
 
     const navigate = useNavigate();
+
+    // 로그인 버튼 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+        const response = await axios.post(
+            "/api/member/login",
+            formData,
+        );
+
+        console.log("Response Data:", response.data);
+
+        if (response.data.success) {
+            toast.success('로그인에 성공했습니다!', {
+                autoClose: 3000,
+                position: "top-center",
+            });
+
+        // 토큰 저장 
+        localStorage.setItem("authToken", response.data.data.token);
+        console.log("Your token", response.data.data);
+
+        // 로그인 성공 후 미션 존재 여부 확인
+        const token = localStorage.getItem("authToken");
+        const missionResponse = await axios.get("/api/missions/exists", {
+            headers: {
+                Authorization: `Bearer ${token}`,  
+            }
+        });
+        
+        console.log(missionResponse);
+
+        if (missionResponse.data.hasRegisteredMission === true) {
+            // 미션이 있을 경우
+            navigate("/mission");
+        } else {
+            // 미션이 없을 경우 (초기 사용자)
+            navigate("/missioninitial");
+        }
+
+        } else {
+            // console.log("로그인 실패");
+            toast.error('로그인에 실패했습니다. 아이디와 비밀번호를 확인하세요.', {
+                autoClose: 3000,
+                position: "top-center",
+            });
+        }
+
+        } catch (error) {
+            console.error("데이터 전송 중 오류 발생:", error);
+            toast.error('로그인 중 오류가 발생했습니다.', {
+                autoClose: 3000,
+                position: "top-center",
+            });
+        }
+    };
 	
     return(
         <LoginRootWrapper>
@@ -55,8 +115,8 @@ export function LoginPage() {
                 />
 
                 <LoginButton
-                    // onClick={handleSubmit}
-                    onClick={() => console.log('로그인 버튼')}
+                    onClick={handleSubmit}
+                    $disabled={!formData.id || !formData.password}
                 >
                     로그인
                 </LoginButton>
@@ -71,12 +131,10 @@ export function LoginPage() {
 }
 
 
-
 const LoginRootWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 393px;
     height: 852px;
     background-color: white;
@@ -90,11 +148,12 @@ const IntroduceContainer = styled.div`
     align-items: start;
     text-align: start;
     margin-right: 30px;
+    margin-top: 100px;
 `;
 
 const LogoImg = styled.img`
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     box-shadow: 7px 7px 15px rgba(0, 0, 0, 0.1); 
 `;
@@ -104,6 +163,7 @@ const HeaderText1 = styled.p`
     font-weight: 400;
     color: black;
     margin-left: 17px;
+    margin-top: 22px;
 
     .highlight {
         font-size: 25px; 
@@ -158,7 +218,7 @@ const PasswordInputBox = styled.input`
 const LoginButton = styled.button`
     width: 95%;
     height: 45px;
-    background-color: #5AB2FF;
+    background-color: ${(props) => props.$disabled ? '#d3d3d3' : '#5AB2FF'};
     color: white;
     font-size: 16px;
     font-weight: bold;
@@ -168,9 +228,11 @@ const LoginButton = styled.button`
     margin-top: 55px;
 
     &:hover {
-        background-color: white;
-        border: 2px solid #5AB2FF;
-        color: #5AB2FF;
+    &:hover {
+        background-color: ${(props) => props.$disabled ? '#d3d3d3' : 'white'};
+        border: 3px solid ${(props) => props.$disabled ? '#d3d3d3' :' #5AB2FF'};
+        color: ${(props) => props.$disabled ? 'white' : '#5AB2FF'};
+    }
     }
 `;
 
