@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import PlusBtn from '../images/PlusBtn.png';
@@ -8,14 +8,17 @@ import AddPopup from '../components/AllList/AddPopup.jsx';
 import FuncPopup from '../components/AllList/FuncPopup.jsx';
 import DeletePopup from '../components/AllList/DeletePopup.jsx';
 import EditPopup from '../components/AllList/EditPopup.jsx'; // EditPopup import 추가
+import axios from 'axios';
+
 
 const Display = styled.div `
     width: 393px;
     height: 852px;
-    border: 1px solid #000;
     display: flex;
   align-items: center;
   flex-direction: column;
+    margin-top: 50px;
+    background-color: #fff;
   text-align: left;
 `;
 
@@ -77,6 +80,39 @@ const AllList = () => {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedMission, setSelectedMission] = useState(null); // 선택된 미션 관리
+  const [missions, setMissions] = useState([]); // 미션
+
+  const [categoryFilter, setCategoryFilter] = useState('ALL'); // 카테고리 필터 상태 추가
+
+  const handleCategoryChange = (e) => {
+    setCategoryFilter(e.target.value); // 드롭다운 값 변경 시 상태 업데이트
+  };
+
+  // 미션 불러오기
+const fetchMissions = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    console.log(token);
+
+    const response = await axios.get('/api/missions', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log(response);
+    
+
+    setMissions(response.data);
+  } catch (error) {
+    console.error('Error fetching missions:', error);
+  }
+};
+
+useEffect(() => {
+  fetchMissions(); // 컴포넌트 마운트 시 실행
+}, []);
+
 
   const handleAddMission = () => {
     setShowPopup(true); // 플러스 버튼 클릭 시 팝업 열기
@@ -99,48 +135,67 @@ const AllList = () => {
     setShowDeletePopup(true); // Delete 팝업 열기
   };
 
-  const handleClosePopup = () => {
-    setShowPopup(false); // 팝업 닫기
-  };
+  // ✅ 팝업 닫을 때 목록 갱신
+const handleClosePopup = () => {
+  setShowPopup(false);
+  fetchMissions(); // 미션 목록 다시 불러오기
+};
 
-  const missions = [
-    { type: 'ing', category: '공부', text: '수학 문제 풀기' },
-    { type: 'yet', category: '공부', text: '영어 단어 외우기' },
-    // 더 많은 미션 데이터를 추가하세요
-  ];
+const handleCloseFuncPopup = () => {
+  setShowFuncPopup(false);
+  fetchMissions();
+};
 
+const handleCloseEditPopup = () => {
+  setShowEditPopup(false);
+  fetchMissions();
+};
+
+const handleCloseDeletePopup = () => {
+  setShowDeletePopup(false);
+  fetchMissions();
+};
+
+  // 미션 필터
+  const filteredMissions = categoryFilter === 'ALL' 
+  ? missions 
+  : missions.filter((mission) => mission.category === categoryFilter);
 
   return (
     <>
       <Display blur={showPopup}>
-      <Header/>
+        <Header />
         <Content style={{ filter: showPopup ? 'blur(3px)' : 'none' }}>
           <FuncDiv>
-          <CategorySelect id="category" name="category">
-            <option value="all">전체</option>
-            <option value="develope">자기계발</option>
-            <option value="study">공부</option>
-            <option value="health">건강</option>
-            <option value="hobby">취미</option>
-            <option value="others">기타</option>
+          <CategorySelect id="category" name="category" onChange={handleCategoryChange}>
+            <option value="ALL">전체</option>
+            <option value="SELF_IMPROVEMENT">자기계발</option>
+            <option value="STUDY">공부</option>
+            <option value="HEALTH">건강</option>
+            <option value="HOBBY">취미</option>
+            <option value="ETC">기타</option>
           </CategorySelect>
           <AddMission onClick={handleAddMission}>
             <Plus src={PlusBtn}/>
           </AddMission>
           </FuncDiv>
           
-            <MissionWrap>
-            {missions.map((mission, index) => (
-              <Mission
-                key={index}
-                type={mission.type}
-                category={mission.category}
-                text={mission.text}
-                onClick={() => handleMissionClick(mission)}
-              />
-            ))}
-
-                </MissionWrap>
+          <MissionWrap>
+          {filteredMissions.message ? (
+              <p>미션이 없습니다</p> // 미션이 없을 때 출력
+            ) : (
+              filteredMissions.map((mission, index) => (
+                <Mission
+                  key={index}
+                  type={mission.status}
+                  category={mission.category}
+                  text={mission.name}
+                  level={mission.level}
+                  onClick={() => handleMissionClick(mission)}
+                />
+              ))
+            )}
+          </MissionWrap>
         </Content>
         {showPopup && <AddPopup onClose={handleClosePopup} />} {/* 팝업 표시 */}
         {showFuncPopup && (
@@ -148,22 +203,23 @@ const AllList = () => {
             mission={selectedMission} // 선택된 미션 데이터 전달
             onEditClick={handleEditClick}
             onDeleteClick={handleDeleteClick}
-            onClose={() => setShowFuncPopup(false)}
+            onClose={handleCloseFuncPopup}
           />
         )}
         {showEditPopup && (
           <EditPopup
             mission={selectedMission}
-            onClose={() => setShowEditPopup(false)}
+            onClose={handleCloseEditPopup}
           />
         )}
         {showDeletePopup && (
           <DeletePopup
             mission={selectedMission}
-            onClose={() => setShowDeletePopup(false)}
+            onClose={handleCloseDeletePopup}
           />
         )}
-      <Footer/>
+        <Footer />
+
       </Display >
     </>
   );

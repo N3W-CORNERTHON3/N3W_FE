@@ -22,9 +22,6 @@ function AppNavigation() {
                 <Route path="/missioninitial" element={<FirstMission />} />
                 <Route path="/missioninitialAdd" element={<FirstMissionAdd />} />
                 <Route path="/mission" element={<AllList />} />
-                <Route path="/challengeIng" element={<Challenge4 />} />
-                <Route path="/challengeIng" element={<Challenge4 />} />
-                <Route path="/challengeIng" element={<Challenge4 />} />
 
                 <Route path="/challenge" element={<Challenge1 />} />
                 <Route path="/challengeSelect" element={<Challenge2 />} />

@@ -5,6 +5,8 @@ import AllList from '../images/AllList.png';
 import Challenge from '../images/Challenge.png';
 import axios from 'axios';
 import profile from '../images/ProfileImg.png';
+import logout from '../images/Logout.png';
+import { useNavigate } from 'react-router-dom';
 
 // styled-components를 사용한 스타일링
 
@@ -26,6 +28,7 @@ const SideBarWrap = styled.div`
   top: 0;
   position: absolute;
   transition: 0.5s ease;
+  margin-top: 50px;
 
   &.open {
     right: 15px;  /* 열렸을 때는 화면 안으로 이동 */
@@ -78,6 +81,24 @@ const Name = styled.p `
   margin-top: 12px;
 `;
 
+const LogoutWrap = styled.div `
+  display: flex;
+  margin-left: 24px;
+  margin-top: 380px;
+`;
+
+const LogoutImg = styled.img `
+  width: 17.8px;
+  height: 18px;
+`;
+
+const LogoutText = styled.p `
+  margin: 0;
+  margin-left: 12.4px;
+  color: #898686;
+  font-size: 15px;
+`;
+
 function Sidebar({ isOpen, setIsOpen }) {
   const [profileData, setProfileData] = useState({ id: '', profileImg: '' });
   const outside = useRef(null);
@@ -101,38 +122,77 @@ function Sidebar({ isOpen, setIsOpen }) {
     setIsOpen(false);
   };
 
-  const token = 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNzM5NjQyMzIyLCJleHAiOjE3Mzk2NDU5MjJ9.mEnWXbIbTgGobZB6ySJFNJapstTFN1n3K1nErLKlKu4';
-
-  // API 요청으로 프로필 정보 가져오기
-  useEffect(() => {
-    axios.get('http://localhost:8080/api/member/profiles', {
-      headers: {
-        'Authorization': `Bearer ${token}` // 혹은 세션 스토리지에서 토큰을 가져올 수 있습니다.
-      }
-    })
-      .then((response) => {
-        const data = response.data[0];  // 배열의 첫 번째 데이터 사용
-        setProfileData({
-          id: data.id,
-          profileImg: data.profileImg ? `http://localhost:8080/${data.profileImg}` : profile,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+  // 프로필 정보를 받아오는 비동기 함수
+  const token = localStorage.getItem('authToken');
+  
+  const axios_get = async () => {
+    try {
+      const response = await axios.get('/api/member/profiles', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+      console.log(response.data.data.profileImg);
+
+      // 서버 응답에서 데이터를 받아와서 상태 업데이트
+      setProfileData({
+        id: response.data.data.id,
+        profileImg: response.data.data.profileImg, // 프로필 이미지 경로 업데이트
+      });
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    axios_get();  // 컴포넌트가 마운트될 때 프로필 정보를 가져옴
   }, []);
+
+  const navigate = useNavigate();
+
+
+  // 진행중인 미션 확인
+  const checkOngoing = async () => {
+    try {
+      const response2 = await axios.get('/api/missions/ongoing', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response2.data.hasOngoingMission) {
+        navigate('/challengeIng'); // 진행 중일 때
+      } else {
+        navigate('/challenge'); // 진행 중이지 않을 때
+      }
+  
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <SideBarWrap ref={outside} className={isOpen ? 'open' : ''}>
       <Profile>
-      <ProfileImg src={profileData.profileImg} alt="Profile" />
+      <ProfileImg src={profileData.profileImg === 'defualtImg' ? profile : profileData.profileImg} alt="Profile" />
       <Name>{profileData.id}</Name>
       </Profile>
       <MenuWrap>
-        <Menu><MenuImg src={Complete}/><MenuText>성취 미션</MenuText></Menu>
-        <Menu><MenuImg src={Challenge}/><MenuText>챌린지</MenuText></Menu>
-        <Menu><MenuImg src={AllList}/><MenuText>전체 미션 목록</MenuText></Menu>
+      <Menu onClick={() => navigate('/challengeComplete')}>
+        <MenuImg src={Complete} />
+        <MenuText>성취 미션</MenuText>
+      </Menu>
+        <Menu onClick={checkOngoing}><MenuImg src={Challenge}/><MenuText>챌린지</MenuText></Menu>
+        <Menu onClick={() => navigate('/mission')}>
+          <MenuImg src={AllList} />
+          <MenuText>전체 미션 목록</MenuText>
+        </Menu>
       </MenuWrap>
+      <LogoutWrap>
+        <LogoutImg src={logout}/>
+        <LogoutText>로그아웃</LogoutText>
+      </LogoutWrap>
     </SideBarWrap>
   );
 }

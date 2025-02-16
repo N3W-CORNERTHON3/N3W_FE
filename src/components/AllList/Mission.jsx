@@ -2,9 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 
 const missionColors = {
-  ing: '#FFEA63', // 진행중
-  yet: '#FFF9D0', // 미완료
-  done: '#D9D9D9', // 완료
+  ING: '#FFEA63', // 진행중
+  INCOMPLETE: '#FFF9D0', // 미완료
+  COMPLETE: '#D9D9D9', // 완료
 };
 
 
@@ -55,7 +55,21 @@ const MissionText = styled.p`
   margin-top: 8px;
 `;
 
-const Mission = ({ type, category, text, onClick  }) => {
+const levelMap = {
+  HIGH: '상',
+  MEDIUM: '중',
+  LOW: '하',
+};
+
+const categotyMap = {
+  SELF_IMPROVEMENT:'자기계발',
+    STUDY:'공부',
+    HEALTH:'건강',
+    HOBBY:'취미',
+    ETC:'기타',
+};
+
+const Mission = ({ type, category, text, onClick, level  }) => {
   const categoryData = {
     자기계발: '#FFF1F1',
     공부: '#FFE4CC',
@@ -63,12 +77,13 @@ const Mission = ({ type, category, text, onClick  }) => {
     취미: '#E9F2FF',
     기타: '#F2E9FF',
   };
+  
 
   return (
     <MissionDiv type={type} onClick={onClick}>
         <MissionDetail>
-        <MissionCategory color={categoryData[category]}>{category}</MissionCategory>
-        <MissionDifficulty>상</MissionDifficulty>
+        <MissionCategory color={categoryData[categotyMap[category]]}>{categotyMap[category]}</MissionCategory>
+        <MissionDifficulty>{levelMap[level]}</MissionDifficulty> {/* 영 -> 한 변환된 값 사용 */}
         </MissionDetail>
       <MissionText>{text}</MissionText>
     </MissionDiv>

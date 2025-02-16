@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import cancel from '../../images/CancelBtn.png'
-
+import axios from 'axios';
 
 
 const Popup = styled.div `
@@ -15,7 +15,7 @@ const Popup = styled.div `
     z-index: 1000; /* 팝업이 앞에 보이도록 z-index 설정 */
 `;
 
-const Content = styled.form `
+const Content = styled.div `
 display: flex;
     flex-direction: column; /* 세로로 쌓이도록 설정 */
     margin: 12px 0 0 20px;
@@ -63,38 +63,94 @@ const Submit = styled.button `
   height: 32px;
   border-radius: 20px;
   border: none;
-  background-color: #5AB2FF;
+  background-color: ${({ disabled }) => (disabled ? "#ccc" : "#5AB2FF")};
   color: #fff;
   font-size: 18px;
   padding: 0 5px;
   position: absolute;
   bottom: 12px;
   right: 22px;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 `;
 
 const AddPopup = ({ onClose }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    category: "",
+    level: "",
+  });
+
+  const isFormValid = formData.category && formData.level && formData.name.trim();
+
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+    console.log(formData);
+    
+  };
+
+  // 제출 버튼튼
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isFormValid) return; // 유효성 검사
+
+    try {// 인증 토큰 가져오기
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.error("토큰이 없습니다. 로그인 상태를 확인하세요.");
+      }
+
+      const response = await axios.post(
+        '/api/missions',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('미션 추가 성공:', response.data);
+      onClose(); // 성공 시 팝업 닫기
+    } catch (error) {
+      console.error('데이터 전송 중 오류 발생:', error);
+    }
+  };
  
   return (
     <>
     <Popup>
         <Content>
-            <CategorySelect id="category" name="category">
-            <option value="none" hidden>카테고리 선택</option>
-            <option value="develope">자기계발</option>
-            <option value="study">공부</option>
-            <option value="health">건강</option>
-            <option value="hobby">취미</option>
-            <option value="others">기타</option>
+            <CategorySelect
+          name="category"
+          value={formData.category}
+          onChange={handleChange}>
+            <option value="NONE" hidden>카테고리 선택</option>
+            <option value="SELF_IMPROVEMENT">자기계발</option>
+            <option value="STUDY">공부</option>
+            <option value="HEALTH">건강</option>
+            <option value="HOBBY">취미</option>
+            <option value="ETC">기타</option>
           </CategorySelect>
-          <DifficultySelect id="difficulty" name="difficulty">
-            <option value="none" hidden>난이도 선택</option>
-            <option value="high">상</option>
-            <option value="mid">중</option>
-            <option value="low">하</option>
+          <DifficultySelect
+          name="level"
+          value={formData.level}
+          onChange={handleChange}>
+            <option value="NONE" hidden>난이도 선택</option>
+            <option value="HIGH">상</option>
+            <option value="MEDIUM">중</option>
+            <option value="LOW">하</option>
           </DifficultySelect>
           <Title>미션 내용</Title>
-            <MissionText></MissionText>
-            <Submit type='submit' >추가하기</Submit>
+            <MissionText
+          name="name"
+          value={formData.name}
+          onChange={handleChange}></MissionText>
+            <Submit type='button' onClick={handleSubmit} disabled={!isFormValid}>추가하기</Submit>
             <CancelBtn src={cancel} onClick={onClose}/>
         </Content>
     </Popup>
