@@ -26,7 +26,7 @@ const Content = styled.div `
   display: flex;
   align-items: center;
   flex-direction: column; /* 세로로 쌓이도록 설정 */
-  margin-top: 26px;
+  margin-top: 90px;
 `;
 
 const FuncDiv = styled.div `
@@ -164,7 +164,6 @@ const handleCloseDeletePopup = () => {
   return (
     <>
       <Display blur={showPopup}>
-        <Header />
         <Content style={{ filter: showPopup ? 'blur(3px)' : 'none' }}>
           <FuncDiv>
           <CategorySelect id="category" name="category" onChange={handleCategoryChange}>
@@ -218,7 +217,6 @@ const handleCloseDeletePopup = () => {
             onClose={handleCloseDeletePopup}
           />
         )}
-        <Footer />
 
       </Display >
     </>

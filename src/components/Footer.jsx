@@ -10,7 +10,7 @@ const FooterDiv = styled.div`
   justify-content: center;
   padding-left: 28px;
   position: absolute;
-  top: 750px;
+  top: 869px;
   text-align: left;
   `;
 

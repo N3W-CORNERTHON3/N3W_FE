@@ -10,6 +10,9 @@ const HeaderDiv = styled.div`
   border: 1.5px solid #B5B5B5;
   display: flex;
   align-items: center;
+  position: relative;
+  top: 118px;
+  background-color: #fff;
 `;
 
 const Logo = styled.img`

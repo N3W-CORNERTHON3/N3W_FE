@@ -22,7 +22,7 @@ const CategoryWrap = styled.div `
     width: 320px;
     display: flex;
     justify-content: space-around;
-    margin-top: 25px;
+    margin-top: 90px;
     padding: 0 5px 18px 5px;
     border-bottom: 1px solid #B0B0B0;
 `;
@@ -92,8 +92,8 @@ const Complete = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-      
           console.log(response);
+          
       
           // 여기서 response.data.data를 사용해야 실제 미션 목록을 가져옴
           setCards(response.data.data);
@@ -128,7 +128,6 @@ const Complete = () => {
       return (
         <>
         <Display>
-        <Header />
 
         <Content showPopup={showPopup}>
             <CategoryWrap>

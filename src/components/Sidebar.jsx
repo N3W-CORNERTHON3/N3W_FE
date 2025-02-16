@@ -10,28 +10,21 @@ import { useNavigate } from 'react-router-dom';
 
 // styled-components를 사용한 스타일링
 
-const Display = styled.div`
-  width: 393px;
-  height: 852px;
-  position: relative;
-  border: 1px solid #ccc;  /* 확인을 위해 경계선 추가 */
-`;
-
 const SideBarWrap = styled.div`
   z-index: 5;
   padding: 12px;
   border-radius: 15px 0 0 15px;
-  background-color: #FFFFFF80;
-  height: 100%;
+  background-color:rgba(255, 255, 255, 0.8);
+  height: 832px;
   width: 200px;
-  right: -200px;  /* 닫혔을 때는 화면 밖에 위치 */
+  right: -220px;  /* 닫혔을 때는 화면 밖에 위치 */
   top: 0;
   position: absolute;
   transition: 0.5s ease;
-  margin-top: 50px;
+  
 
   &.open {
-    right: 15px;  /* 열렸을 때는 화면 안으로 이동 */
+    right: 0px;  /* 열렸을 때는 화면 안으로 이동 */
     transition: 0.5s ease;
   }
 `;
@@ -84,7 +77,7 @@ const Name = styled.p `
 const LogoutWrap = styled.div `
   display: flex;
   margin-left: 24px;
-  margin-top: 380px;
+  margin-top: 300px;
 `;
 
 const LogoutImg = styled.img `
@@ -189,7 +182,10 @@ function Sidebar({ isOpen, setIsOpen }) {
           <MenuText>전체 미션 목록</MenuText>
         </Menu>
       </MenuWrap>
-      <LogoutWrap>
+      <LogoutWrap onClick={() => {
+  localStorage.removeItem('authToken');  // 토큰 삭제
+  navigate('/');  // 로그인 페이지로 이동
+}}>
         <LogoutImg src={logout}/>
         <LogoutText>로그아웃</LogoutText>
       </LogoutWrap>

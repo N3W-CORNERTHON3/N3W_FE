@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const missionColors = {
-  ING: '#FFEA63', // 진행중
+  PROGRESSING: '#FFEA63', // 진행중
   INCOMPLETE: '#FFF9D0', // 미완료
   COMPLETE: '#D9D9D9', // 완료
 };
