@@ -131,12 +131,10 @@ export function LoginPage() {
 }
 
 
-
 const LoginRootWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     width: 393px;
     height: 852px;
     background-color: white;
@@ -150,11 +148,12 @@ const IntroduceContainer = styled.div`
     align-items: start;
     text-align: start;
     margin-right: 30px;
+    margin-top: 100px;
 `;
 
 const LogoImg = styled.img`
-    width: 150px;
-    height: 150px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
     box-shadow: 7px 7px 15px rgba(0, 0, 0, 0.1); 
 `;
@@ -164,6 +163,7 @@ const HeaderText1 = styled.p`
     font-weight: 400;
     color: black;
     margin-left: 17px;
+    margin-top: 22px;
 
     .highlight {
         font-size: 25px; 
