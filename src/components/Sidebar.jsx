@@ -22,8 +22,6 @@ const SideBarWrap = styled.div`
   transition: 0.5s ease;
   display: ${({ isOpen }) => (isOpen ? 'block' : 'none')}; /* 숨김 처리 */
 
-  
-
   &.open {
     right: 0px;  /* 열렸을 때는 화면 안으로 이동 */
     transition: 0.5s ease;
