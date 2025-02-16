@@ -113,7 +113,7 @@ const Complete = () => {
       const categoryMap = {
         STUDY: '공부',
         HEALTH: '건강',
-        DEVELOP: '자기계발',
+        SELF_IMPROVEMENT: '자기계발',
         HOBBY: '취미',
         OTHERS: '기타',
       };
