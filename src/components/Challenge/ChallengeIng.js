@@ -118,8 +118,11 @@ export function ChallengeIngPage(){
     const changeMissionStatus = async () => {
         try {
             const response = await axios.put(`/api/missions/status/${missionId}/status`, 
-                { newStatus: "COMPLETE" },
+                {},
                 {
+                    params: {
+                        newStatus: "COMPLETE"
+                    },
                     headers: {
                         Authorization: `Bearer ${token}`,
                         "Content-Type": "application/json"
