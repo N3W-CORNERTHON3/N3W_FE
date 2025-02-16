@@ -26,7 +26,7 @@ function AppNavigation() {
                 <Route path="/challenge" element={<Challenge1 />} />
                 <Route path="/challengeSelect" element={<Challenge2 />} />
                 <Route path="/challengeResult" element={<Challenge3 />} />
-                <Route path="/challengeIng" element={<Challenge4 />} />
+                <Route path="/challengeIng/:missionId" element={<Challenge4 />} />
 
                 <Route path="/challengeComplete" element={<Complete />} />
                 

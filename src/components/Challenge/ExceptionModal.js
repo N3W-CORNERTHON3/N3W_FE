@@ -53,7 +53,7 @@ const ModalOverlay = styled.div`
     justify-content: center;
     align-items: center;
     margin-top: 50px;
-    transform: translate(-50%, -57%);
+    transform: translate(-50%, -59%);
 `;
 
 const RootWrapper = styled.div`

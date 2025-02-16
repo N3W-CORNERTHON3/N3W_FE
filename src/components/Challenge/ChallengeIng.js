@@ -1,32 +1,165 @@
 import styled from "styled-components"; 
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import ProcessChart from "./Chart";
+import axios from 'axios'; 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export function ChallengeIngPage(){
 
     const navigate = useNavigate();
+    const { missionId } = useParams();  
+    // console.log("Mission ID", missionId);
 
-    // 체크박스 상태 관리 
+    const [mission, setMission] = useState(null);
     const [checkedStates, setCheckedStates] = useState([false, false, false]);
-    const handleCompleteChange = (index) => {
-        setCheckedStates((prev) => {
-            const newState = [...prev];
-            newState[index] = !newState[index];
-            return newState;
-        });
-    };
-
-    // 메모 상태 관리
     const [content, setContent] = useState("");
     
+    const token = localStorage.getItem("authToken");
+
+    // 상세 정보 요청
+    const getMissionDetail = async () => {
+        try {
+            const response = await axios.get(`/api/missions/detail/${missionId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            if (response.status === 200) {
+                console.log("미션 상세 정보:", response.data);
+                setMission(response.data);
+            } 
+
+        } catch (error) {
+            console.error("상세 정보 요청 중 오류 발생:", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        if (missionId) {
+            getMissionDetail();
+        }
+    }, [missionId]);
+
+
+    // 체크박스
+    const handleCompleteChange =  async (index, missionId) => {
+        const isChecked = !checkedStates[index];
+
+        try {
+            const endpoint = isChecked 
+                ? `/api/missions/check/${missionId}`  // 체크 시
+                : `/api/missions/uncheck/${missionId}`; // 체크 해제 시
+    
+            const response = await axios.put(
+                endpoint,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            if (response.status === 200) {
+                setCheckedStates((prev) => {
+                    const newState = [...prev];
+                    newState[index] = isChecked; // 상태 업데이트
+                    return newState;
+                });
+                console.log("체크 상태 변경:", response.data);
+                toast.success(isChecked ? '오늘도 성공!' : '내일은 꼭..!', {
+                    autoClose: 3000,
+                    position: "top-center",
+                });
+            }
+    
+        } catch (error) {
+            console.error("체크 상태 변경 중 오류 발생:", error);
+        }
+    };
+
+    // 메모 저장
     const handleMemoChange = (e) => {
         setContent(e.target.value);
     };
 
-    const handleSaveMemo = () => {
-        console.log("저장된 메모:", content);
+    const handleSaveMemo = async () => {
+        try {
+            const response = await axios.put(
+                `/api/missions/memo/${missionId}`, 
+                { memo: content },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            if (response.status === 200) {
+                setContent(response.data.memo);
+                console.log("메모 저장", response.data);
+                toast.success('메모가 저장되었습니다.', {
+                    autoClose: 3000,
+                    position: "top-center",
+                });
+            } 
+
+        } catch (error) {
+            console.error("정보 처리 중 오류 발생:", error);
+            return null;
+        }
     };
+
+    // 미션 상태 변경
+    const changeMissionStatus = async () => {
+        try {
+            const response = await axios.put(`/api/missions/status/${missionId}/status`, 
+                { newStatus: "COMPLETE" },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                },
+            );
+    
+            if (response.status === 200) {
+                console.log("미션 상태 변경:", response.data);
+                toast.success('미션을 완료했습니다!', {
+                    autoClose: 3000,
+                    position: "top-center",
+                });
+                navigate('/challengeComplete');
+            } 
+
+        } catch (error) {
+            console.error("정보 처리 중 오류 발생:", error);
+            return null;
+        }
+    };
+
+    const levelMap = {
+        'LOW': '하',
+        'MEDIUM': '중',
+        'HIGH': '상',
+        'RANDOM': '랜'
+    };
+    
+    const categoryMap = {
+        'HEALTH': '건강',
+        'STUDY': '학습',
+        'SELF_IMPROVEMENT': '자기계발',
+        'HOBBY': '취미',
+        'ETC': '기타',
+    };
+
+    if (!mission) {
+        return <div>로딩 중...</div>; 
+    }
 
 
     return(
@@ -35,13 +168,13 @@ export function ChallengeIngPage(){
                 <ContentContainer>
 
                     <ChallengeHeaderWrapper>
-                        <ChallengeDate>2025.02 ~ 2025.02.03</ChallengeDate>
+                        <ChallengeDate>{mission.startDate} ~ {mission.endDate}</ChallengeDate>
                         <ChallengeHeaderContainer>
-                            <Level>하</Level>
-                            <Category>건강</Category>
+                            <Level>{levelMap[mission.level] || mission.level}</Level>
+                            <Category>{categoryMap[mission.category] || mission.category}</Category>
                         </ChallengeHeaderContainer>
                         <MissionRectengle>
-                            <MissionName>하루에 만보 걷기</MissionName>
+                            <MissionName>{mission.name}</MissionName>
                         </MissionRectengle>
                     </ChallengeHeaderWrapper>
                     
@@ -59,7 +192,7 @@ export function ChallengeIngPage(){
                                             type="checkbox"
                                             id={`checkbox-${index}`}
                                             checked={checked}
-                                            onChange={() => handleCompleteChange(index)}
+                                            onChange={() => handleCompleteChange(index, mission.missionId)}
                                         />
                                     </CheckboxWrapper>
                                 ))}
@@ -85,7 +218,9 @@ export function ChallengeIngPage(){
                     </MemoContainer>
                     
                     <CompleteBtnWrapper>
-                        <ChallengeCompleteBtn onClick={() => navigate(`/`)}>
+                        <ChallengeCompleteBtn 
+                            onClick={changeMissionStatus}
+                        >
                             챌린지 완료하기
                         </ChallengeCompleteBtn>
                     </CompleteBtnWrapper>

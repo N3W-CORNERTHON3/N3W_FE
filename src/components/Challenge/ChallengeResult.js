@@ -1,9 +1,48 @@
 import styled from "styled-components"; 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { useState } from "react";
 
 export function ChallengeResultPage(){
 
+    const location = useLocation();
+    const mission = location.state?.mission.name || "미션을 찾을 수 없습니다.";
+    const missionId = location.state?.mission.missionId || "미션을 찾을 수 없습니다.";
+    // console.log("missionId", missionId);
     const navigate = useNavigate();
+
+    const token = localStorage.getItem("authToken");
+    // console.log("Your token", token);
+    
+    // 챌린지 시작 버튼 
+    const handleChallengeStart = async (e) => {
+        e.preventDefault();
+
+        try {
+            const response = await axios.put(
+                `/api/missions/start/${missionId}`,
+                {}, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,  
+                    }
+                }
+            );
+            if (response.status === 200) {
+                toast.success('미션이 시작되었습니다!', {
+                    autoClose: 2000,
+                    position: "top-center",
+                });
+
+                // 미션 상세(진행중) 페이지로 이동
+                navigate(`/challengeIng/${missionId}`);
+            }
+        } catch (error) {
+            console.error("데이터 전송 중 오류 발생:", error);
+        }
+    };
 
     return(
         <ChallengeRootWrapper>
@@ -16,10 +55,12 @@ export function ChallengeResultPage(){
                 <ChallengeImg src={"/ChallengeResult.png"} />
 
                 <ResultText>
-                    하루에 만보 걷기
+                    {mission}
                 </ResultText>
 
-                <ChallengeStartBtn onClick={() => navigate(`/challengeSelect`)}>
+                <ChallengeStartBtn 
+                    onClick={handleChallengeStart}
+                >
                     챌린지 시작
                 </ChallengeStartBtn>
                 <ReSelectBtn onClick={() => navigate(`/challengeSelect`)}>
