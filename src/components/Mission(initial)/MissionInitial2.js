@@ -1,9 +1,14 @@
 import React, {useState} from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 export function MissionInitial2page(){
     const categories = ["건강", "자기계발", "취미", "학습", "기타"];
     const levels = ["하", "중", "상"];
+    const navigate = useNavigate();
 
     // 상태 관리
     const [missions, setMissions] = useState([
@@ -11,13 +16,6 @@ export function MissionInitial2page(){
         { category: "", level: "", content: "" },
         { category: "", level: "", content: "" }
     ]);
-    // const [selectedCategory, setSelectedCategory] = useState("");
-    // const [selectedLevel, setSelectedLevel] = useState("");
-    // const [missionContent, setMissionContent] = useState("");
-
-    // const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
-    // const handleLevelChange = (e) => setSelectedLevel(e.target.value);
-    // const handleMissionChange = (e) => setMissionContent(e.target.value);
 
     const addMission = () => {
         setMissions([...missions, { category: "", level: "", content: "" }]);
@@ -30,17 +28,66 @@ export function MissionInitial2page(){
     };
 
     const updateMission = (index, key, value) => {
-        const newMissions = missions.map((mission, i) =>
-            i === index ? { ...mission, [key]: value } : mission
+        setMissions((prevMissions) => 
+            prevMissions.map((mission, i) => 
+                i === index ? { ...mission, [key]: value } : mission
+            )
         );
-        setMissions(newMissions);
     };
 
-    // 미션 3개이상 입력 필수수
+    // 미션 3개이상 입력 필수
     const showInfoText = missions.filter(mission => mission.category === "" || mission.level === "" || mission.content === "").length > 0 || missions.length < 3;
 
-    const complete =(e) =>{
-        console.log("완료버튼");
+
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+        console.log("로그인 상태를 확인해주세요.");
+    }
+    
+    // 완료 버튼
+    const handleComplete = async (e) =>{
+        e.preventDefault();
+        console.log("현재 미션 상태:", missions);
+
+        try {
+            const formattedMissions = missions
+                .filter(mission => mission.category && mission.level && mission.content) // 이 조건이 유효한지 확인
+                .map(mission => ({
+                    name: mission.content,
+                    category: mission.category === "건강" ? "HEALTH" :
+                            mission.category === "자기계발" ? "SELF_IMPROVEMENT" :
+                            mission.category === "취미" ? "HOBBY" :
+                            mission.category === "학습" ? "STUDY" : "ETC",
+                    level: mission.level === "하" ? "LOW" :
+                        mission.level === "중" ? "MEDIUM" : "HIGH"
+                }));
+
+            console.log("전송할 미션:", formattedMissions);
+
+			const response = await axios.post(
+				"/api/missions/batch",
+                formattedMissions,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                }
+			);
+
+			console.log("미션 생성 완료", response.data);
+
+			// 페이지 이동 
+			navigate("/mission");
+
+		} catch (error) {
+			console.error("데이터 전송 중 오류 발생:", error);
+            toast.error('미션 추가에 실패했습니다. 모든 항목을 채워주세요.', {
+                autoClose: 3000,
+                position: "top-center",
+            });
+        }
+        
     }
 
     return(
@@ -105,7 +152,10 @@ export function MissionInitial2page(){
                 </PlusBtn>
 
                 {showInfoText && <InfoText>미션이 최소 3개 이상 필요해요! 모두 입력해주세요.</InfoText>}
-                <MissionConfirmBtn onClick={complete}>
+                <MissionConfirmBtn 
+                    onClick={handleComplete}
+                    $disabled={showInfoText}
+                >
                     완료하기 
                 </MissionConfirmBtn>
             </ContentWrapper>
@@ -294,7 +344,7 @@ const InfoText = styled.p`
 const MissionConfirmBtn = styled.button`
     width: 94%;
     height: 45px;
-    background-color: #5AB2FF;
+    background-color: ${(props) => props.$disabled ? '#d3d3d3' : '#5AB2FF'};
     color: white;
     font-size: 20px;
     font-weight: bold;
@@ -306,8 +356,8 @@ const MissionConfirmBtn = styled.button`
     align-self: center;
 
     &:hover {
-        background-color: white;
-        border: 2px solid #5AB2FF;
-        color: #5AB2FF;
+        background-color: ${(props) => props.$disabled ? '#d3d3d3' : 'white'};
+        border: 3px solid ${(props) => props.$disabled ? '#d3d3d3' :' #5AB2FF'};
+        color: ${(props) => props.$disabled ? 'white' : '#5AB2FF'};
     }
 `;

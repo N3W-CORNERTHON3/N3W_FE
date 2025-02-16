@@ -52,8 +52,10 @@ export function LoginPage() {
                 Authorization: `Bearer ${token}`,  
             }
         });
+        
+        console.log(missionResponse);
 
-        if (missionResponse.data.exists) {
+        if (missionResponse.data.hasRegisteredMission === true) {
             // 미션이 있을 경우
             navigate("/mission");
         } else {

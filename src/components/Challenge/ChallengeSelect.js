@@ -2,6 +2,9 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { ExeptionModal } from "./ExceptionModal";
+import axios from 'axios'; 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // 객체로 관리
 export const categories = {
@@ -20,9 +23,20 @@ export const levels = {
 };
 
 export function ChallengeSelectPage(){
+    const [category, setCategory] = useState("");  
+    const [level, setLevel] = useState("");  
+    const [completeChecked, setcompleteChecked] = useState(false);  
+    const [missions, setMissions] = useState([]); 
+
+    const handleCategoryChange = (event) => {
+        setCategory(event.target.value);
+    };
+
+    const handleLevelChange = (event) => {
+        setLevel(event.target.value);
+    };
 
     // 체크박스 상태관리
-    const [completeChecked, setcompleteChecked] = useState(false);
     function handleCompleteChange(event) {
         setcompleteChecked(event.target.checked);
     }
@@ -40,14 +54,70 @@ export function ChallengeSelectPage(){
 
     const navigate = useNavigate();
 
-    // 목데이터
-    const [missions, setMissions] = useState([]); 
+    // 형식 변환 (서버 전송)
+    const categoryToEnglish = (category) => {
+        switch (category) {
+            case "건강": return "HEALTH";
+            case "자기계발": return "SELF_IMPROVEMENT";
+            case "취미": return "HOBBY";
+            case "학습": return "STUDY";
+        }
+    };
+    
+    const levelToEnglish = (level) => {
+        switch (level) {
+            case "하": return "LOW";
+            case "중": return "MEDIUM";
+            case "상": return "HIGH";
+            case "랜덤" : return "RANDOM";
+        }
+    };
 
-    const handleMissionDraw = () => {
-        if (missions.length === 0) {
-            openModal(); // 미션이 없으면 예외 모달 오픈
+    const token = localStorage.getItem("authToken");
+    // console.log("Your token", token);
+
+    // 주제 뽑기 버튼
+    const handleMissionDraw = async (e) => {
+        if (!category || !level) {
+            toast.error('카테고리와 난이도를 모두 선택해주세요.', {
+                autoClose: 3000,
+                position: "top-center",
+            })
+        };
+        
+        const categoryInEnglish = categoryToEnglish(category);
+        const levelInEnglish = levelToEnglish(level);
+
+        try {
+            // API 요청 보내기
+            const response = await axios.get(
+                "/api/missions/random",
+                {
+                    params: {
+                        category: categoryInEnglish,  
+                        level: levelInEnglish,        
+                        includeCompleted: completeChecked  
+                    },
+                    
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                },
+            );
+
+            console.log("Server response:", response.data);
+            setMissions(response.data);  // 미션 상태에 저장
+            navigate("/challengeResult", { state: { mission: response.data } }); 
+
+        } catch (error) {
+            console.error("API 요청 중 오류 발생:", error);
+            // 404오류 (선택한 옵션에 미션 없음) 모달 표시
+        if (error.response.status === 404) {
+            openModal(); 
         } else {
-            navigate(`/challengeResult`);
+            console.error("데이터 전송 중 오류 발생", error);
+        }
         }
     };
 
@@ -68,6 +138,7 @@ export function ChallengeSelectPage(){
                                     id={`category-${key}`}
                                     name="category"
                                     value={value}
+                                    onChange={handleCategoryChange}
                                 />
                                 <CustomRadioBtn htmlFor={`category-${key}`}>
                                     <InfoCheckBoxSpan>{value}</InfoCheckBoxSpan>
@@ -90,6 +161,7 @@ export function ChallengeSelectPage(){
                                     id={`level-${key}`}
                                     name="levels"
                                     value={value}
+                                    onChange={handleLevelChange}
                                 />
                                 <CustomRadioBtn htmlFor={`level-${key}`}>
                                     <InfoCheckBoxSpan>{value}</InfoCheckBoxSpan>
