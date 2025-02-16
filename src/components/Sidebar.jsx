@@ -66,6 +66,9 @@ const Profile = styled.div `
   `;
 
 const ProfileImg = styled.img `
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
 `;
 
 const Name = styled.p `
@@ -125,7 +128,7 @@ function Sidebar({ isOpen, setIsOpen }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data.data.profileImg);
+      console.log(response);
 
       // 서버 응답에서 데이터를 받아와서 상태 업데이트
       setProfileData({
@@ -155,7 +158,7 @@ function Sidebar({ isOpen, setIsOpen }) {
       });
       
       if (response2.data.hasOngoingMission) {
-        navigate('/challengeIng'); // 진행 중일 때
+        fetchMissions();// 진행 중일 때 
       } else {
         navigate('/challenge'); // 진행 중이지 않을 때
       }
@@ -165,10 +168,73 @@ function Sidebar({ isOpen, setIsOpen }) {
     }
   };
 
+  // 미션 불러오기
+  const fetchMissions = async () => {
+    try {
+      const response = await axios.get('/api/missions', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(response);
+      
+      const missions = response.data; // 서버에서 받은 미션 목록
+      const progressingMission = missions.find(mission => mission.status === 'PROGRESSING'); // 진행 중인 미션 찾기
+  
+      if (progressingMission) {
+        const { missionId } = progressingMission; // 진행 중인 미션의 ID
+        navigate(`/challengeIng/${missionId}`); // 해당 미션 ID로 이동
+      } else {
+        console.log('No ongoing mission.');
+      }
+  
+    } catch (error) {
+      console.error('Error fetching missions:', error);
+    }
+  };
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+  
+    const formData = new FormData();
+    formData.append('image', file);  // form-data로 이미지 파일 추가
+  
+    try {
+      const response = await axios.put('/api/member/profiles', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,  // 인증 토큰 추가
+          'Content-Type': 'multipart/form-data',  // multipart/form-data 헤더 설정
+        },
+      });
+  
+      if (response.data.success) {
+        // 성공 시 서버로부터 받은 이미지 URL로 프로필 이미지 변경
+        setProfileData((prev) => ({ ...prev, profileImg: response.data.data }));
+        console.log('프로필 변경 성공:', response.data.data);
+      } else {
+        console.error('프로필 변경 실패:', response.data.message);
+      }
+    } catch (error) {
+      console.error('이미지 업로드 실패:', error);
+    }
+  };
+  
   return (
     <SideBarWrap ref={outside} className={isOpen ? 'open' : ''}>
       <Profile>
-      <ProfileImg src={profileData.profileImg === 'defualtImg' ? profile : profileData.profileImg} alt="Profile" />
+      <ProfileImg
+  src={profileData.profileImg == 'defualtImg' ? profile : profileData.profileImg}
+  alt="Profile"
+  onClick={() => document.getElementById('fileInput').click()}  // 클릭 시 파일 선택 창 열기
+/>
+        <input
+          id="fileInput"
+          type="file"
+          style={{ display: 'none' }}  // 화면에 보이지 않도록 숨김
+          onChange={handleFileChange}  // 파일 선택 시 호출할 핸들러
+        />
+
       <Name>{profileData.id}</Name>
       </Profile>
       <MenuWrap>

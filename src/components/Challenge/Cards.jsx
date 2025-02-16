@@ -4,11 +4,11 @@ import star from '../../images/Star.png';
 import noStar from '../../images/NoStar.png';
 
 const categoryColors = {
-    develope: '#FFF1F1',    // 자기계발 카테고리 색상
-    study: '#FFE4CC',     // 공부 카테고리 색상
-    health: '#E8FFE3',      // 건강 카테고리 색상
-    hobby: '#E9F2FF',    // 취미 카테고리 색상
-    others: '#F2E9FF',    // 기타 카테고리 색상
+  SELF_IMPROVEMENT: '#FFF1F1',    // 자기계발 카테고리 색상
+  STUDY: '#FFE4CC',     // 공부 카테고리 색상
+  HEALTH: '#E8FFE3',      // 건강 카테고리 색상
+  HOBBY: '#E9F2FF',    // 취미 카테고리 색상
+  ETC: '#F2E9FF',    // 기타 카테고리 색상
   };
 
 const Card = styled.div `
@@ -74,7 +74,11 @@ const darkenColor = (color, percentage) => {
       .slice(1)}`;
   };
 
-const Cards = ({ onClick, category, number }) => {
+const Cards = ({ onClick, category, number, achievement}) => {
+  const stars = Array(3)
+    .fill(noStar)
+    .map((_, index) => (index < achievement ? star : noStar));
+  
   return (
     <>
          <Card category={category} onClick={onClick}>
@@ -83,9 +87,9 @@ const Cards = ({ onClick, category, number }) => {
                 <MissionNum>{number}</MissionNum>
             </CardContent>
             <StarWrap>
-                    <Star src={star}></Star>
-                    <Star src={star}></Star>
-                    <Star src={noStar}></Star>
+            {stars.map((src, index) => (
+            <Star key={index} src={src} />
+          ))}
                 </StarWrap>
         </Card>
         

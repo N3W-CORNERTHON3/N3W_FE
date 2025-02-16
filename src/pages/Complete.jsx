@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 
 import styled from 'styled-components';
 import Cards from '../components/Challenge/Cards.jsx';
-import Header from '../components/Header.jsx';
-import Footer from '../components/Footer.jsx';
 import CardDetail from '../components/Challenge/CardDetail.jsx';
 import { useEffect } from 'react';
 import axios from 'axios';
@@ -68,10 +66,14 @@ const CardWarp = styled.div`
 const Complete = () => {
 
     const [selectedCard, setSelectedCard] = useState(null); // 선택된 카드 데이터 상태
-
     const [showPopup, setShowPopup] = useState(false); // 팝업 상태 관리
-    
     const [cards, setCards] = useState([]); // 카드드
+    const [selectedCategory, setSelectedCategory] = useState('전체');
+
+    const handleCategoryClick = (category) => {
+      setSelectedCategory(category);
+    };
+    
 
     const handleOpenPopup = (cardData) => {
         setSelectedCard(cardData);  // 선택된 카드 데이터를 설정
@@ -86,11 +88,13 @@ const Complete = () => {
       const fetchMissions = async () => {
         try {
           const token = localStorage.getItem('authToken');
-      
-          const response = await axios.get('/api/achive/', {
+          console.log(token);
+          
+          const response = await axios.get('/api/achive', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
+
           });
           console.log(response);
           
@@ -131,27 +135,37 @@ const Complete = () => {
 
         <Content showPopup={showPopup}>
             <CategoryWrap>
-              {categoryData.map((category, index) => (
-                <Category key={index} style={{ backgroundColor: category.color }}>
-                  {category.name}
-                </Category>
-              ))}
+            {categoryData.map((category, index) => (
+  <Category 
+    key={index} 
+    style={{ backgroundColor: category.color }}
+    onClick={() => handleCategoryClick(category.name)}
+  >
+    {category.name}
+  </Category>
+))}
+
             </CategoryWrap>
             <CardWarp>
-            {cards.map((card, index) => (
+            {cards
+  .filter(card => selectedCategory === '전체' || categoryMap[card.category] === selectedCategory)
+  .map((card, index) => (
     <Cards 
       key={card.missionId} 
+      number = {index+1}
       onClick={() => handleOpenPopup(card)} 
       category={card.category} 
-      number={card.achievement} // 또는 다른 숫자 값
-      title={card.name} // 카드 제목 추가 (필요하면)
+      achievement={card.achievement} 
+      title={card.name} 
     />
-  ))}
-            </CardWarp>
+))}
+
+    </CardWarp>
             
     </Content>
     {showPopup && selectedCard && (
-  <CardDetail onClose={handleClosePopup} card={selectedCard} category={categoryMap[selectedCard.category]} rate={33}/>
+  <CardDetail onClose={handleClosePopup} card={selectedCard} category={categoryMap[selectedCard.category]} rate={selectedCard.achievement}/>
+
 )} 
     </Display>
     </>

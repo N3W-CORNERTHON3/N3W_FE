@@ -10,7 +10,7 @@ const Popup = styled.div `
     border-radius: 15px;
     /*position: relative;*/
     position: absolute; 
-    top: 200px;
+    top: 400px;
     box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.3);
     background-color: ${({ color }) => color};
     z-index: 1000; /* 팝업이 앞에 보이도록 z-index 설정 */
@@ -81,7 +81,7 @@ const RateWrap = styled.div `
 `;
 
 const RateYellow = styled.div `
-    width: 147px;
+    width: 127px;
     height: 12px;
     border-radius: 20px;
     background-color: #FFFDF0;
@@ -117,6 +117,11 @@ const MemoText = styled.p `
     overflow: hidden;
 `;
 
+const levelMap = {
+  HIGH: '상',
+  MEDIUM: '중',
+  LOW: '하',
+};
 
 const CardDetail = ({ onClose, card, category, rate }) => {
     const categoryData = {
@@ -130,20 +135,20 @@ const CardDetail = ({ onClose, card, category, rate }) => {
     <>
     <Popup color={categoryData[category]}>
         <Content>
-          <MissionText>미션 내용</MissionText>
+          <MissionText>{card.name}</MissionText>
           <MissionDetail>
                 <MissionCategory>{category}</MissionCategory>
-                <MissionDifficulty>상</MissionDifficulty>
+                <MissionDifficulty>{levelMap[card.level]}</MissionDifficulty>
         </MissionDetail>
             <SubTitle>성취율</SubTitle>
             <RateWrap>
                 <RateYellow>
-                <RateBlue rate={rate}></RateBlue>
+                <RateBlue rate={rate * 33 + 1}></RateBlue>
                 </RateYellow>
-                <RateText>{rate}%</RateText>
+                <RateText>{rate * 33 + 1}%</RateText>
             </RateWrap>
             <SubTitle>메모</SubTitle>
-            <Memo><MemoText>어쩌구저쩌구</MemoText></Memo>
+            <Memo><MemoText>{card.memo}</MemoText></Memo>
             <CancelBtn src={cancel} onClick={onClose}/>
         </Content>
     </Popup>
